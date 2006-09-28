@@ -1,8 +1,8 @@
-### is.constant.R  (2004-02-15)
+### is.constant.R  (2006-02-15)
 ###
 ###     Simple check for constant time series
 ###
-### Copyright 2003-04 Korbinian Strimmer
+### Copyright 2003-06 Korbinian Strimmer
 ###
 ###
 ### This file is part of the `GeneCycle' library for R and related languages.
@@ -24,19 +24,9 @@
 
 
 # checks wether a vector (time series) is constant
-is.constant.single <- function(v)
+is.constant.single = function (v)
 {
-   tmp <- v[1]
-   flag <- TRUE
-   for (i in 2:length(c))
-   {
-      if (v[i] != tmp)
-      {
-         flag = FALSE
-	 break
-      }
-   }
-   flag
+    return( all(diff(v) == 0))
 }
 
 

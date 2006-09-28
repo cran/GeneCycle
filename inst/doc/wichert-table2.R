@@ -16,9 +16,9 @@ library("GeneCycle")
 data(caulobacter)
 
 # download these files from http://www.strimmerlab.org/data.html 
-load("spellmann-yeast.rda")
-load("fibroblasts.rda")
-load("humanhela.rda")
+load("spellmann-yeast.rda.gz")
+load("fibroblasts.rda.gz")
+load("humanhela.rda.gz")
 
 # calculate p-values and determine number of significant genes
 find.periodic.genes <- function(dataset)

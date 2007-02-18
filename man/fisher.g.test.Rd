@@ -29,7 +29,7 @@ fisher.g.test(x, \dots)
 \value{
   A vector of p-values (one for each time series).  Multiple testing
   may then be done using the the false discover rate approach
-  (function \code{\link[fdrtool]{fdr.control}}).
+  (function \code{\link[fdrtool]{fdrtool}}).
 }
 \author{
   Konstantinos Fokianos (\url{http://www.ucy.ac.cy/~fokianos/}) and
@@ -44,10 +44,9 @@ fisher.g.test(x, \dots)
   Wichert, S., Fokianos, K., and Strimmer, K. (2004).  Identifying periodically expressed transcripts
    in microarray time series data. \emph{Bioinformatics} \bold{20}:5-20.
 }
-\seealso{\code{\link[fdrtool]{fdr.control}}.}
+\seealso{\code{\link[fdrtool]{fdrtool}}.}
 
 \examples{
-\dontrun{
 
 # load GeneCycle library
 library("GeneCycle")
@@ -62,9 +61,13 @@ dim(caulobacter)
 pval.caulobacter <- fisher.g.test(caulobacter)
 pval.caulobacter
 
-# test with FDR controlled at on the level 0.05
-fdr.control(pval.caulobacter, Q = 0.05)
+# compute Fdr and fdr values
+fdr.out <- fdrtool(pval.caulobacter, statistic="pvalue", 
+                    pval.estimate.eta0.arg=list(method="bootstrap"))
 
-}
+# how many significant?
+sum(fdr.out$qval < 0.05) # tail area-based Fdr
+sum(fdr.out$lfdr < 0.2)  # density-based local fdr
+
 }
 \keyword{htest}

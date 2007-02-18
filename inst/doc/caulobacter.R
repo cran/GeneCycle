@@ -1,6 +1,6 @@
 #######################################################################
 # Note that this note can directly be run in R.
-# Version: GeneCycle 1.0.0 (August 2006)
+# Version: GeneCycle 1.0.2 (February 2007)
 #######################################################################
 
 #
@@ -57,35 +57,19 @@ pval.caulobacter
 
 
 #######################################################################
-# multiple testing with tail-area based FDR
-
-# test with FDR controlled at on the level 0.05
-fdr.out <- fdr.control(pval.caulobacter, Q = 0.05)
-fdr.out
-fdr.out$num.significant
+# multiple testing 
 
 # proportion of null p-values for different methods
-fdr.estimate.eta0(pval.caulobacter, method="conservative")
-fdr.estimate.eta0(pval.caulobacter, method="adaptive")
-fdr.estimate.eta0(pval.caulobacter, method="bootstrap")
-fdr.estimate.eta0(pval.caulobacter, method="smoother")
-
-# FDR test with eta0 != 1
-fdr.control(pval.caulobacter, Q = 0.05, eta0=0.9)$num.significant
+pval.estimate.eta0(pval.caulobacter, method="conservative")
+pval.estimate.eta0(pval.caulobacter, method="adaptive")
+pval.estimate.eta0(pval.caulobacter, method="bootstrap")
+pval.estimate.eta0(pval.caulobacter, method="smoother")
 
 
-#######################################################################
-# multiple testing with local fdr
-
-
-# transform exact p-values to z-scores
-z.caulobacter <- qnorm(pval.caulobacter)
-plot(density.pr(z.caulobacter))
-
-lfdr <- locfdr(z.caulobacter)$fdr
-sum(lfdr < 0.2)
-
-
-#######################################################################
+# (local) false discovery rates (using bootstrap)
+fdr.out <- fdrtool(pval.caulobacter, statistic="pvalue", 
+                    pval.estimate.eta0.arg=list(method="bootstrap"))
+sum(fdr.out$qval < 0.05) # 53
+sum(fdr.out$lfdr < 0.2) # 94
 
 

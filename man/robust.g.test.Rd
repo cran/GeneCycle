@@ -73,7 +73,7 @@ robust.spectrum(x)
 
 
 }
-\seealso{\code{\link[fdrtool]{fdr.control}}, \code{\link{fisher.g.test}}.}
+\seealso{\code{\link[fdrtool]{fdrtool}}, \code{\link{fisher.g.test}}.}
 
 \examples{
 \dontrun{

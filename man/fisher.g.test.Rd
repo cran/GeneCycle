@@ -62,8 +62,7 @@ pval.caulobacter <- fisher.g.test(caulobacter)
 pval.caulobacter
 
 # compute Fdr and fdr values
-fdr.out <- fdrtool(pval.caulobacter, statistic="pvalue", 
-                    pval.estimate.eta0.arg=list(method="bootstrap"))
+fdr.out <- fdrtool(pval.caulobacter, statistic="pvalue")
 
 # how many significant?
 sum(fdr.out$qval < 0.05) # tail area-based Fdr

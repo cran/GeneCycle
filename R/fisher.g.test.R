@@ -1,8 +1,8 @@
-### fisher.g.test.R (2005-04-11)
+### fisher.g.test.R (2008-06-03)
 ###
 ###     Fisher's exact g test
 ###
-### Copyright 2003-05 Konstantinos Fokianos and Korbinian Strimmer
+### Copyright 2003-08 Konstantinos Fokianos and Korbinian Strimmer
 ###
 ###
 ### This file is part of the `GeneCycle' library for R and related languages.
@@ -34,14 +34,24 @@ fisher.g.test.single <- function(x, ...)
     # constant time series result in a p-value of 1
     if( is.constant.single(x) ) return(1)
     
-    m <- floor(length(x)/2)
     f.spec <- periodogram.spec(x, ...)
-      
+
+    # we have to exclude the intensity at frequency \pi for 
+    # an even number of time points 
+    # (the need for this was pointed out by Sue Wilson)
+    # changed 3 June 2008
+    
+    if ( (length(x) %% 2) == 0 ) 
+      f.spec = f.spec[-length(f.spec)]  # remove peak at frequency \pi
+
     # Max Periodogram at Frequency w1 in radians/unit time:
-    w1 <- (1:length(f.spec))[f.spec == max(f.spec)][1] # [1] because we may have multiple maxima...    
+    w1 <- which.max(f.spec)
     fisher   <- f.spec[w1]/sum(f.spec)
     upper    <- floor(1/fisher)
     compose  <- rep(NA, length=upper)
+    
+    m = length(f.spec)
+
     for (j in 1:upper)
     {
       # original code

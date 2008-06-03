@@ -1,6 +1,6 @@
 #######################################################################
 # Note that this note can directly be run in R.
-# Version: GeneCycle 1.0.2 (February 2007)
+# Version: GeneCycle 1.0.3 (February 2008)
 #######################################################################
 
 #
@@ -67,9 +67,8 @@ pval.estimate.eta0(pval.caulobacter, method="smoother")
 
 
 # (local) false discovery rates (using bootstrap)
-fdr.out <- fdrtool(pval.caulobacter, statistic="pvalue", 
-                    pval.estimate.eta0.arg=list(method="bootstrap"))
-sum(fdr.out$qval < 0.05) # 53
+fdr.out <- fdrtool(pval.caulobacter, statistic="pvalue")
+sum(fdr.out$qval < 0.05) # 52
 sum(fdr.out$lfdr < 0.2) # 94
 
 

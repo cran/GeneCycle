@@ -1,8 +1,8 @@
-### robust.g.test.R  (2005-05-24)
+### robust.g.test.R  (2008-06-03)
 ###
 ###    Robust detection of periodic time series
 ###
-### Copyright 2005 Miika Ahdesmaki
+### Copyright 2005-8 Miika Ahdesmaki
 ###
 ###
 ###
@@ -155,15 +155,18 @@ robust.g.test <- function(y, index, perm = FALSE, x, noOfPermutations = 5000)
 g.statistic <- function(y, index)
 {
   if(missing(index)){
-  	maxVals <- apply(y,2,max)	# Maximum component
-  	sumVals <- apply(y,2,sum)	# Sum of components
+  	maxVals <- apply(y[-1,],2,max)	# Maximum component
+  	sumVals <- apply(y[-1,],2,sum)	# Sum of components
   	return(maxVals / sumVals)	# Return the ratios
   }
   else{
   	vals <- y[index,]	# Picks the index:th component of each spectrum
-  	sumVals <- apply(y,2,sum)
+  	sumVals <- apply(y[-1,],2,sum)
   	return(vals / sumVals)
   }
+
+# note: y[-1,] has to be used instead of y to exclude zero frequency
+# changed 3 June 2008
 }
 
 

@@ -1,8 +1,8 @@
-### robust.g.test.R  (2008-06-03)
+### robust.g.test.R  (2008-07-02)
 ###
 ###    Robust detection of periodic time series
 ###
-### Copyright 2005-8 Miika Ahdesmaki
+### Copyright 2005-8, 2008-7 Miika Ahdesmaki
 ###
 ###
 ###
@@ -32,11 +32,12 @@
 
 # public functions
 
-
-robust.g.test <- function(y, index, perm = FALSE, x, noOfPermutations = 5000) 
+#robust.g.test <- function(y, index, perm = FALSE, x, noOfPermutations = 5000) 
+robust.g.test <- function(y, index, perm = FALSE, x, noOfPermutations = 300, algorithm=c("rank", "regression"), t) 
 {
   # ASSUMPTION: Each time series is of the same length.
-  
+  algorithm = match.arg(algorithm)
+
   # 'y' is the matrix consisting of the spectral estimates
   # as column vectors. 
   
@@ -46,25 +47,40 @@ robust.g.test <- function(y, index, perm = FALSE, x, noOfPermutations = 5000)
   # estimates that is to be used in the testing for periodicity.
   # If 'index' is missing, the maximum component of the spectral
   # estimate is used in testing (regardless of the frequency 
-  # of this maximum).
-  
+  # of this maximum). 
+  # NOTE: 'index' is unrelevant for the regression approach; only 
+  # the maximum component will be tested in this function. For testing
+  # a given frequency in the regression approach, please see the
+  # file robust.spectrum.R
+  if (algorithm == "regression" && !missing(index)) {rm(index)}
   
   # 'perm' is a boolean. If 'perm' is FALSE, 
   # a simulated distribution for the g-statistic is used. 
   # If per 'perm' is TRUE, permutation  tests are used to find 
   # the distribution of the g-statistic for each time series
   # separately. 
+  # NOTE: permutations will be used for the regression approach
+  # regardless of the given state of this variable.
+  if (algorithm == "regression") {perm = TRUE}
   
   #'x' must include the original time series for 
   # the permutation alternative (not needed if permutation 
   # tests are not used).
   
   # 'noOfPermutations' tells the number of permutations that 
-  # are used for each time series (default = 5000).
-  
-  
+  # are used for each time series (default = 300).
+
+  # Check for the regression based approach if 'x' exists
+  # and whether the time series are of even or odd length
+  if (algorithm == "regression") {
+    if(missing(x) || missing(t)){stop("Original time series x and sampling time vector t must be specified")}
+    if(nrow(x) %% 2 == 0){
+      isEven = TRUE
+    }else{isEven = FALSE}
+    gstats <- g.statistic(y, isEven=isEven)
+  }else{
   gstats <- g.statistic(y, index)	# Evaluate the g-statistic
-						# for each spectrum
+  }						# for each spectrum
 
   ######################################################
   # First we consider the approach where we simulate the
@@ -126,13 +142,18 @@ robust.g.test <- function(y, index, perm = FALSE, x, noOfPermutations = 5000)
   			# Resample the time series...
   			temp[,perm] <- myresample(x[,tS])
   		}
+	   if(algorithm=="rank"){
   		# ...And evaluate the Pearson's spectral estimator
   		# for each permutation
-  		specTemp <- robust.spectrum(temp)
-  
+  		specTemp <- robust.spectrum(temp) 
   		# Evaluate g-statistics for each spectral estimate
   		gs <- g.statistic(specTemp, index)
-  
+           }else{
+		# evaluate the regression based estimator
+  		specTemp <- robust.spectrum(x = temp, algorithm = "regression", t=t) 
+  		gs <- g.statistic(y = specTemp, isEven = isEven)		
+           }
+
   		# Form an estimate of the distribution of the 
   		# g-statistic
   		gsDens <- density(gs)
@@ -152,12 +173,19 @@ robust.g.test <- function(y, index, perm = FALSE, x, noOfPermutations = 5000)
 ##########################################################
 ###Returns the g-statistics of spectra####################
 ##########################################################
-g.statistic <- function(y, index)
+g.statistic <- function(y, index, isEven=FALSE)
 {
   if(missing(index)){
-  	maxVals <- apply(y[-1,],2,max)	# Maximum component
-  	sumVals <- apply(y[-1,],2,sum)	# Sum of components
+	nrowsy <- nrow(y)
+	if(isEven){
+  	maxVals <- apply(y[c(-1,-nrowsy), ,drop=FALSE],2,max)	# Maximum component
+  	sumVals <- apply(y[c(-1,-nrowsy), ,drop=FALSE],2,sum)	# Sum of components
   	return(maxVals / sumVals)	# Return the ratios
+	}else{
+  	maxVals <- apply(y[-1, ,drop=FALSE],2,max)	# Maximum component
+  	sumVals <- apply(y[-1, ,drop=FALSE],2,sum)	# Sum of components
+  	return(maxVals / sumVals)	# Return the ratios
+	}
   }
   else{
   	vals <- y[index,]	# Picks the index:th component of each spectrum
@@ -166,7 +194,11 @@ g.statistic <- function(y, index)
   }
 
 # note: y[-1,] has to be used instead of y to exclude zero frequency
-# changed 3 June 2008
+# The pi-frequency is never included in the rank-spectra (due to
+# the implemented interpolation and exclusion of the pi-frequency)
+# The pi-frequency is included in the regression spectra (when N 
+# even) but is not considered in calculating the g-statistic.
+# changed 3 July 2008
 }
 
 

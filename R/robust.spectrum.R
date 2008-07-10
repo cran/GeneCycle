@@ -1,8 +1,8 @@
-### robust.spectrum.R  (2005-05-24)
+### robust.spectrum.R  (2008-07-02)
 ###
-###    Robust estimate of spectrum of time series
+###    Robust estimate of spectra of time series
 ###
-### Copyright 2005 Miika Ahdesmaki
+### Copyright 2005, 2008 Miika Ahdesmaki
 ###
 ###
 ###
@@ -37,32 +37,213 @@
 #################################################################
 ############# The spectra of multiple time series ###############
 #################################################################
-robust.spectrum <- function(x) 
+robust.spectrum <- function(x,algorithm=c("rank", "regression"), t, periodicity.time=FALSE, noOfPermutations=300) 
+# 'x' is the matrix of time series as column vectors
+# 
+# For the regression approach, the time vector 't' of sampling times 
+# must be given.
+#
+# The variable 'frequency' is by default FALSE and will only affect the
+# regression based approach. If it has a numerical (positive) value, the 
+# given frequency will be used in testing for periodicity (only for the
+# regression based method)
+# 'noOfPermutations' is the number of permutations used in the permutation tests - 
+# however, it only affects the regression based method when periodicity.time
+# is given some numerical value
+#
+#
+# The output of the function will be the estimated spectra (to be 
+# further processed by robust.g.test) or, for the regression 
+# based method _and_ known periodicity frequency, the p-values.
 {
-  # x should be a matrix consisting of the time series as column
-  # vectors.
-  if (is.longitudinal(x))
-  {
-    if (has.repeated.measurements(x) )
-      stop("Multiple measurements per time point are not supported")
+  algorithm = match.arg(algorithm)
+
+  if (algorithm == "rank"){
+    ## BEGIN RANK##
+    # x should be a matrix consisting of the time series as column
+    # vectors.
+    if (is.longitudinal(x))
+    {
+      if (has.repeated.measurements(x) )
+        stop("Multiple measurements per time point are not supported")
     
-    if (!is.equally.spaced(x))
-      warning("Function assumes equally spaced time points")
-  }
-  else
-  {
-    x <- as.matrix(x)
+      if (!is.equally.spaced(x))
+        warning("Function assumes equally spaced time points")
+    }
+    else
+    {
+      x <- as.matrix(x)
+    }
+
+    noTS <- ncol(x) #number of time series
+    y <- matrix(NA,nrow(x),ncol(x))
+    for (h in 1:noTS)
+    {
+      temp <- x[,h]
+      y[,h] <- robust.spectrum.single(temp)
+    }  
+    return(y)
+  ## END RANK##
+
+
+  }else{
+  ## BEGIN REGRESSION APPROACH
+    if(missing(t)){
+      stop("The sampling times must be given for the regression based approach.")}
+    if (is.longitudinal(x))
+    {
+      if (has.repeated.measurements(x) )
+        stop("Multiple measurements per time point are not supported")
+    
+      if (!is.equally.spaced(x))
+        warning("Please give the time indices in a separate vector t!")
+    }
+    else
+    {
+      x <- as.matrix(x)
+    }
+
+	library(MASS)
+	# library(lqs)
+
+    # two cases: search all frequencies (after which apply robust.g.test)
+    # or just one given frequency (for which p-values will be evaluated here)
+    if(periodicity.time){
+    ############ KNOWN FREQUENCY, REGRESSION BASED APPROACH
+	noOfGenes = ncol(x)
+	Nt = nrow(x)
+	if(!(Nt==length(t))){stop("Length of t must be equal to the number of rows in x")}
+	timeVector = (t - t[1]) / (t[Nt] - t[1]) * (Nt-1) # "index"-vector with non-integer values
+	Fs = (timeVector[2]-timeVector[1]) / (t[2]-t[1]) # 1/The mean sampling time
+	f = (1/Fs)/periodicity.time # the normalised frequency at which periodicity will be sought
+	sine = sin(2*pi*f*timeVector)   # The sine we use in regression
+	cosine = cos(2*pi*f*timeVector) # The cosine we use in regression
+
+	#X = matrix(c(sine,cosine),2,Nt)	# design matrix for regression
+	A = matrix(0, 2,noOfGenes)
+	#MATLAB -> R	
+	for (gene in 1:noOfGenes){
+		temp = rlm(x[,gene] ~ sine + cosine, method='MM')
+    		A[,gene] = matrix(temp$coefficients[2:3],2,1)
+	}
+	A=A[1,]^2 + A[2,]
+	
+	distri = matrix(0,noOfPermutations,Nt)
+	for (kierros in 1 : noOfPermutations){
+	    permu = sample(Nt)
+	    for (gene in 1:noOfGenes){
+	        sarja = x[permu,gene]
+	        temp = rlm(sarja ~ sine + cosine, method='MM')
+	        distri[kierros,gene] = temp$coefficients[2]^2 + temp$coefficients[3]^2
+	    }
+	}
+
+	density_size = 512	#density()-default size
+	xDens = matrix(0, density_size,gene)
+	yDens = matrix(0, density_size,gene)
+	for (gene in 1 : noOfGenes){
+	    #[FF_rob(:,gene),Xi_rob(:,gene)] = density(distri[,gene])
+	    temp = density(distri[,gene], from=0)
+	    xDens[,gene] = temp$x
+	    yDens[,gene] = temp$y
+	}
+	pval = matrix(0,noOfGenes,1)
+	for (gene in 1:noOfGenes){ #calculate p-values for each test/gene
+		pval[gene] = sum(yDens[A[gene] < xDens[, gene], gene])
+		pval[gene] = pval[gene] * (xDens[2,gene]-xDens[1,gene]) #assumption:...
+	    #...density() returns equally sampled densities
+	}
+	print("Please note, returning p-values!")
+	return(pval)
+    }else{
+    ############## UNKNOWN FREQUENCY, REGRESSION BASED APPROACH
+	noOfGenes = ncol(x)
+	Nt = nrow(x)
+	if(!(Nt==length(t))){stop("Length of t must be equal to the number of rows in x")}
+	timeVector = (t - t[1]) / (t[Nt] - t[1]) * (Nt-1) # "index"-vector with non-integer values
+	Fs = (timeVector[2]-timeVector[1]) / (t[2]-t[1]) # 1/The mean sampling time
+	if(Nt %% 2 == 0){
+      		isEven = TRUE
+	}else{isEven = FALSE}
+	k = 0 : floor((Nt)/2)		# if Nt is even, the component Nt/2 will be considered separately
+	K = length(k)			# 
+	kronpro = matrix(k %x% timeVector, Nt, K)
+	sines = sin(2*pi*kronpro/Nt)	# The sines we use in regression
+	cosines = cos(2*pi*kronpro/Nt)	# The cosines we use in regression
+	
+	# the coefficients/wieghts for the sines and cosines will be collected in A
+	#
+	sinCoeffs=matrix(0,K,noOfGenes)
+	cosCoeffs = matrix(0,K,noOfGenes)
+
+	# Next we first fit the sines (and cosines) to the signals without residual subtraction (to get an initial estimate). Then, based on the initial estimate, we again fit the sines in decreasing order of power of the initial fit (i.e. the frequency, which has the most power in the initial estimate, is fitted first and so on) and always fit only to the residuals of the previous round (the first frequency is fit to the original signal).
+	for (gene in 1:noOfGenes){
+		temp = fit.DC(x[,gene])
+		cosCoeffs[1,gene] = temp$coeffs[1]	# intercept/DC-level
+		sinCoeffs[1,gene] = temp$coeffs[2]	# 0
+		if(isEven){
+			for (frek in 2:(K-1)){
+				temp = fit.freqs(x[,gene],sines[,frek],cosines[,frek])
+				cosCoeffs[frek,gene] = temp$coeffs[1]
+				sinCoeffs[frek,gene] = temp$coeffs[2]
+			}
+			temp = fit.pi(x[,gene],cosines[,K])
+			cosCoeffs[K,gene] = temp$coeffs[1]	# pi-frequency
+			sinCoeffs[K,gene] = temp$coeffs[2]	# 0
+			
+		}else{
+			for (frek in 2:(K)){
+				temp = fit.freqs(x[,gene],sines[,frek],cosines[,frek])
+				cosCoeffs[frek,gene] = temp$coeffs[1]
+				sinCoeffs[frek,gene] = temp$coeffs[2]
+			}
+		}
+	}
+
+	# ... and then fit to residuals
+	tempSpectrum = cosCoeffs^2 + sinCoeffs^2
+	#print(tempSpectrum)
+	sinCoeffs = matrix(0,K,noOfGenes)
+	cosCoeffs = matrix(0,K,noOfGenes)	
+	# B = list(sinCoeffs=matrix(0,K,noOfGenes), cosCoeffs = matrix(0,K,noOfGenes))
+	for (gene in 1:noOfGenes){
+		sortSpec = sort(tempSpectrum[,gene], decreasing = TRUE, index.return = TRUE)
+		temp = fit.DC(x[,gene])
+		cosCoeffs[1,gene] = temp$coeffs[1]	# intercept/DC-level
+		sinCoeffs[1,gene] = temp$coeffs[2]	# 0
+		RESID = temp$resid
+		if(isEven){
+			for (frek in sortSpec$ix){
+				if(frek==1 || frek == K){next}
+				temp = fit.freqs(RESID,sines[,frek],cosines[,frek])
+				cosCoeffs[frek,gene] = temp$coeffs[1]
+				sinCoeffs[frek,gene] = temp$coeffs[2]
+				RESID = temp$resid
+			}
+			temp = fit.pi(RESID,cosines[,K])
+			cosCoeffs[K,gene] = temp$coeffs[1]	# pi-frequency
+			sinCoeffs[K,gene] = temp$coeffs[2]	# 0
+			
+		}else{
+			for (frek in sortSpec$ix){
+				if(frek==1){next}
+				temp = fit.freqs(RESID,sines[,frek],cosines[,frek])
+				cosCoeffs[frek,gene] = temp$coeffs[1]
+				sinCoeffs[frek,gene] = temp$coeffs[2]
+				RESID = temp$resid
+			}
+		}	
+		
+		
+	}
+	y = cosCoeffs^2 + sinCoeffs^2
+	#print(y)
+    	return(y)
+    }
+
+  ############## END REGRESSION APPROACH
   }
 
-  noTS <- ncol(x) #number of time series
-  y <- matrix(NA,nrow(x),ncol(x))
-  for (h in 1:noTS)
-  {
-    temp <- x[,h]
-    y[,h] <- robust.spectrum.single(temp)
-  }
-  
-  return(y)
 }
 
 ######################################################################
@@ -97,8 +278,8 @@ robust.spectrum.single <- function(x)
   ##############################################
   # Reserve space
   Rsm <- matrix(NA, nrow = maxM+1, ncol = 1)
-    
-  
+
+
   missing <- is.na(x)
   nonMissing <- !missing
   mi <- which(missing)     # indices for missing values
@@ -129,7 +310,7 @@ robust.spectrum.single <- function(x)
   Rsm[(length(Rsm)+1):zp] <- 0
   fftemp <- fft(Rsm)
   
-  # The following implementation is as in (Ahdesmäki, Lähdesmäki et al., 2005)
+  # The following implementation is as in (AhdesmÃ¤ki, LÃ¤hdesmÃ¤ki et al., 2005)
   Ssm <- abs( 2*Re(fftemp) - Rsm[1] )
   Ssm <- Ssm[1:floor(length(Ssm)/2)]
   
@@ -171,7 +352,6 @@ spearman <- function(x, y, N, version=c("builtin", "miika") )
   return(rho)
 }
 
-
 #############################################
 # check that the two versions are the same
 #
@@ -183,4 +363,38 @@ spearman <- function(x, y, N, version=c("builtin", "miika") )
 #############################################
 
 
-######################################################################
+
+
+#################################################################
+#################################################################
+######## Private functions for the regression approach   ########
+#################################################################
+#################################################################
+
+#################################################################
+########Private function: Regression approach, DC-level  ########
+#################################################################
+fit.DC <- function(x){
+	temp = rlm(x ~ 1, method='MM')
+	B = list(coeffs = c(2 * temp$coefficients[1],0), resid = temp$residuals)
+	return(B)
+}
+#################################################################
+########Private function: Regression approach, Fourier freqs ####
+#################################################################
+fit.freqs <- function(x,sine,cosine){
+	temp = rlm(x ~ sine + cosine, method='MM')
+	B = list(coeffs = temp$coefficients[2:3], resid = temp$residuals)
+	return(B)
+}
+#################################################################
+########Private function: Regression approach, pi-frequency #####
+#################################################################
+# NOTE: this function should only be called if the time series length is even
+fit.pi <- function(x,cosine){
+	# note: for pathological sampling (eg. 0, 1.5, 2.5, 3.5, 4.5,...) this implementation is bad, since we are not fitting the sinusoidal (for integer, i.e. ordinary, sampling the sinusoidal term is always zero)
+	temp = rlm(x ~ cosine, method='MM')
+	B = list(coeffs = c(2 * temp$coefficients[2],0), resid = temp$residuals)
+	return(B)
+}
+#################################################################

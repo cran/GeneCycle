@@ -11,6 +11,10 @@
 \alias{gPopCreate}
 \alias{myresample}
 
+\alias{fit.DC}
+\alias{fit.freqs}
+\alias{fit.pi}
+\alias{g.statistic}
 
 \title{Internal GeneCycle Functions}
 \description{

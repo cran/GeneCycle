@@ -1,3 +1,16 @@
+		CHANGES IN GeneCycle VERSION 1.1.1
+
+- major bug fixes for the known-frequency robust
+  regression -based periodicity detector (rendering 
+  the implementation useless). Mainly:
+
+  1) misindexing of a matrix crashed the evaluation
+     of p-values
+
+  2) squaring of one of the two sinusoidal coefficients
+     was missing in evaluating the test statistic
+
+
 		CHANGES IN GeneCycle VERSION 1.1.0
 
 - major update, maintainer changed to Miika Ahdesmaki

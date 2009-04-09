@@ -1,8 +1,8 @@
-### robust.spectrum.R  (2008-07-02)
+### robust.spectrum.R  (2009-04-09)
 ###
-###    Robust estimate of spectra of time series
+###    Robust estimates of spectra of time series
 ###
-### Copyright 2005, 2008 Miika Ahdesmaki
+### Copyright 2005, 2009 Miika Ahdesmaki
 ###
 ###
 ###
@@ -103,7 +103,7 @@ robust.spectrum <- function(x,algorithm=c("rank", "regression"), t, periodicity.
       x <- as.matrix(x)
     }
 
-	library(MASS)
+	require(MASS)
 	# library(lqs)
 
     # two cases: search all frequencies (after which apply robust.g.test)
@@ -119,16 +119,15 @@ robust.spectrum <- function(x,algorithm=c("rank", "regression"), t, periodicity.
 	sine = sin(2*pi*f*timeVector)   # The sine we use in regression
 	cosine = cos(2*pi*f*timeVector) # The cosine we use in regression
 
-	#X = matrix(c(sine,cosine),2,Nt)	# design matrix for regression
 	A = matrix(0, 2,noOfGenes)
-	#MATLAB -> R	
+
 	for (gene in 1:noOfGenes){
 		temp = rlm(x[,gene] ~ sine + cosine, method='MM')
     		A[,gene] = matrix(temp$coefficients[2:3],2,1)
 	}
-	A=A[1,]^2 + A[2,]
+	A=A[1,]^2 + A[2,]^2
 	
-	distri = matrix(0,noOfPermutations,Nt)
+	distri = matrix(0,noOfPermutations,noOfGenes)
 	for (kierros in 1 : noOfPermutations){
 	    permu = sample(Nt)
 	    for (gene in 1:noOfGenes){
@@ -139,8 +138,8 @@ robust.spectrum <- function(x,algorithm=c("rank", "regression"), t, periodicity.
 	}
 
 	density_size = 512	#density()-default size
-	xDens = matrix(0, density_size,gene)
-	yDens = matrix(0, density_size,gene)
+	xDens = matrix(0, density_size,noOfGenes)
+	yDens = matrix(0, density_size,noOfGenes)
 	for (gene in 1 : noOfGenes){
 	    #[FF_rob(:,gene),Xi_rob(:,gene)] = density(distri[,gene])
 	    temp = density(distri[,gene], from=0)
@@ -153,6 +152,7 @@ robust.spectrum <- function(x,algorithm=c("rank", "regression"), t, periodicity.
 		pval[gene] = pval[gene] * (xDens[2,gene]-xDens[1,gene]) #assumption:...
 	    #...density() returns equally sampled densities
 	}
+	pval[pval>1] = 1	# Just to be sure
 	print("Please note, returning p-values!")
 	return(pval)
     }else{

@@ -1,3 +1,7 @@
+		CHANGES IN GeneCycle VERSION 1.1.2
+- Fixed typo in help of avgp (avpg -> avgp)
+- Repackaged to compress .rda.
+
 		CHANGES IN GeneCycle VERSION 1.1.1
 
 - major bug fixes for the known-frequency robust

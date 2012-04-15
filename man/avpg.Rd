@@ -1,5 +1,6 @@
-\name{avpg}
+\name{avgp}
 \alias{avgp}
+\alias{avpg}
 \title{Average Periodogram for Multiple (Genetic) Time Series}
 \description{
   \code{avgp} calculates and plots the average periodogram as described in

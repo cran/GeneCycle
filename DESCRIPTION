@@ -1,6 +1,6 @@
 Package: GeneCycle
-Version: 1.1.1
-Date: 2009-04-09
+Version: 1.1.2
+Date: 2012-04-15
 Title: Identification of Periodically Expressed Genes
 Author: Miika Ahdesmaki, Konstantinos Fokianos, and Korbinian Strimmer.
 Maintainer: Miika Ahdesmaki <miika.ahdesmaki@gmail.com>
@@ -12,7 +12,7 @@ Description: The GeneCycle package implements the approaches of Wichert
         (2007) for detecting periodically expressed genes from gene
         expression time series data.
 License: GPL (>= 3)
-URL: http://strimmerlab.org/software/genecycle/
-Packaged: Thu Apr 9 11:20:59 2009; mahdesma
+URL: http://www.cs.tut.fi/~ahdesmak/robustperiodic/index.html
+Packaged: 2012-04-16 19:04:22 UTC; ahdesmak
 Repository: CRAN
-Date/Publication: 2009-04-14 17:26:07
+Date/Publication: 2012-04-16 19:59:35

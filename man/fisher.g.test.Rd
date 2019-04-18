@@ -32,7 +32,7 @@ fisher.g.test(x, \dots)
   (function \code{\link[fdrtool]{fdrtool}}).
 }
 \author{
-  Konstantinos Fokianos (\url{http://www.ucy.ac.cy/~fokianos/}) and
+  Konstantinos Fokianos and
   Korbinian Strimmer (\url{http://strimmerlab.org}).
 }
 \references{

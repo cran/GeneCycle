@@ -13,7 +13,7 @@
 
 # Note: in the following multiple testing is performed in four ways:
 #      - as in Wichert et al. using the original Benjamini-Hochberg (1995) 
-         algorithm (this yields the "conservative" estimate)
+#        algorithm (this yields the "conservative" estimate)
 #      - using the FDR approach of Storey and Tibshirani (2003)
 #         (this yields the "less conservative" estimate)
 #      - using semiparametric Fdr and local fdr, as estimated by the

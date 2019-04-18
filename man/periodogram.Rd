@@ -46,7 +46,7 @@ periodogram(x, method = "builtin")
 
 
 \author{
-  Konstantinos Fokianos (\url{http://www.ucy.ac.cy/~fokianos/}) and
+  Konstantinos Fokianos and
   Korbinian Strimmer (\url{http://strimmerlab.org}).
 }
 \seealso{\code{\link{spectrum}}, \code{\link{avgp}}, \code{\link{fisher.g.test}}.}

@@ -35,7 +35,7 @@ avgp(x, title = deparse(substitute(x)), plot = TRUE, angular = FALSE, \dots)
   The result is returned invisibly if \code{plot} is true.
 }
 \author{
-  Konstantinos Fokianos (\url{http://www.ucy.ac.cy/~fokianos/}) and
+  Konstantinos Fokianos and
   Korbinian Strimmer (\url{http://strimmerlab.org}).
 }
 \references{

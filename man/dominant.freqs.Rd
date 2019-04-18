@@ -23,7 +23,7 @@ dominant.freqs(x, m=1, \dots)
 }
 
 \author{
-  Konstantinos Fokianos (\url{http://www.ucy.ac.cy/~fokianos/}) and
+  Konstantinos Fokianos and
   Korbinian Strimmer (\url{http://strimmerlab.org}).
 }
 \seealso{\code{\link{periodogram}}, \code{\link{spectrum}}.}

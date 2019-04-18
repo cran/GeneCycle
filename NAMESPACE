@@ -10,3 +10,7 @@ import(
   longitudinal,
   fdrtool
 )
+importFrom("stats", "cor", "density", "fft", "frequency", "rnorm",
+             "spectrum")
+importFrom("utils", "read.table")
+

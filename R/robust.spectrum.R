@@ -103,7 +103,7 @@ robust.spectrum <- function(x,algorithm=c("rank", "regression"), t, periodicity.
       x <- as.matrix(x)
     }
 
-	require(MASS)
+	#require(MASS)
 	# library(lqs)
 
     # two cases: search all frequencies (after which apply robust.g.test)
@@ -310,7 +310,7 @@ robust.spectrum.single <- function(x)
   Rsm[(length(Rsm)+1):zp] <- 0
   fftemp <- fft(Rsm)
   
-  # The following implementation is as in (Ahdesmäki, Lähdesmäki et al., 2005)
+  # The following implementation is as in (Ahdesmaki, Lahdesmaki et al., 2005)
   Ssm <- abs( 2*Re(fftemp) - Rsm[1] )
   Ssm <- Ssm[1:floor(length(Ssm)/2)]
   

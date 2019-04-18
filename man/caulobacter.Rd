@@ -22,9 +22,7 @@ data(caulobacter)
 }
 
 \source{
-  This data is described in Laub et al. (2000) and can be freely
-  downloaded from 
-  (\url{http://caulobacter.stanford.edu/CellCycle/DownloadData.htm}).
+  This data is described in Laub et al. (2000).
 }
 
 

@@ -122,8 +122,12 @@ robust.spectrum <- function(x,algorithm=c("rank", "regression"), t, periodicity.
 	A = matrix(0, 2,noOfGenes)
 
 	for (gene in 1:noOfGenes){
-		temp = rlm(x[,gene] ~ sine + cosine, method='MM')
-    		A[,gene] = matrix(temp$coefficients[2:3],2,1)
+		#### try-catch the code to avoid error of dimension with method=MM in some cases ###
+		temp = tryCatch(rlm(x[,gene] ~ sine + cosine, method='MM'),
+			warning = function(indpdt.var) { rlm(x[,gene] ~ sine + cosine, method='M') },
+			error = function(indpdt.var) { rlm(x[,gene] ~ sine + cosine, method='M') })
+		#temp = rlm(x[,gene] ~ sine + cosine, method='MM')
+    	A[,gene] = matrix(temp$coefficients[2:3],2,1)
 	}
 	A=A[1,]^2 + A[2,]^2
 	
@@ -132,7 +136,12 @@ robust.spectrum <- function(x,algorithm=c("rank", "regression"), t, periodicity.
 	    permu = sample(Nt)
 	    for (gene in 1:noOfGenes){
 	        sarja = x[permu,gene]
-	        temp = rlm(sarja ~ sine + cosine, method='MM')
+	        #temp = rlm(sarja ~ sine + cosine, method='MM')
+	         #### try-catch the code to avoid error of dimension with method=MM in some cases ###
+	        temp = tryCatch(rlm(sarja ~ sine + cosine, method='MM'),
+	            warning = function(indpdt.var) { rlm(x[,gene] ~ sine + cosine, method='M') },
+	            error = function(indpdt.var) { rlm(x[,gene] ~ sine + cosine, method='M') })
+
 	        distri[kierros,gene] = temp$coefficients[2]^2 + temp$coefficients[3]^2
 	    }
 	}
@@ -142,7 +151,7 @@ robust.spectrum <- function(x,algorithm=c("rank", "regression"), t, periodicity.
 	yDens = matrix(0, density_size,noOfGenes)
 	for (gene in 1 : noOfGenes){
 	    #[FF_rob(:,gene),Xi_rob(:,gene)] = density(distri[,gene])
-	    temp = density(distri[,gene], from=0)
+	    temp = density(distri[,gene], from=0, na.rm=TRUE)
 	    xDens[,gene] = temp$x
 	    yDens[,gene] = temp$y
 	}

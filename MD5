@@ -1,11 +1,11 @@
-db75bf1e9264fade4814a2f9f60a7a85 *CHANGES
-4347efef2e3983e8d60ef9120ab5ad84 *DESCRIPTION
+de1d79df067d16135865934e84fd4826 *CHANGES
+c8abeb9015ab127335e65f93eadbd5e5 *DESCRIPTION
 b4db98a44fc9265d4180d1e80d2abe79 *NAMESPACE
 b06615af8276bcaa89e3c5e26da8fa7c *R/avgp.R
 f27036b4c9e3a139afccde9cbd393965 *R/fisher.g.test.R
 ef490749b9d1b495af6e25b977623a2e *R/is.constant.R
 e9daa1d1728094c0a7bbe4a6419db253 *R/robust.g.test.R
-06da652142edb48e5d6675a868457fac *R/robust.spectrum.R
+944b6fdc375482318493ad10acbcf5e9 *R/robust.spectrum.R
 90f355e5480fce0ec6879b9e615699e5 *data/caulobacter.rda
 95428de2a5d55a6844d80f469b143c31 *inst/doc/caulobacter.R
 1d5225925518d40eb26176be2374f9f1 *inst/doc/index.html

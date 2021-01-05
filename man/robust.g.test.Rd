@@ -112,12 +112,12 @@ depending on how many
 
   Ahdesmaki, M., Lahdesmaki, H., Pearson, R., Huttunen, H., and 
 Yli-Harja O.
-  (2005).  \emph{BMC Bioinformatics} \bold{6}:117. \url{http://www.biomedcentral.com/1471-2105/6/117}
+  (2005).  \emph{BMC Bioinformatics} \bold{6}:117. \url{https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-6-117}
 
 
   Ahdesmaki, M., Lahdesmaki, H., Gracey, A., Shmulevich, I., and 
 Yli-Harja O.
-  (2007).  \emph{BMC Bioinformatics} \bold{8}:233. \url{http://www.biomedcentral.com/1471-2105/8/233}
+  (2007).  \emph{BMC Bioinformatics} \bold{8}:233. \url{https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-8-233}
 
 }
 \seealso{\code{\link[fdrtool]{fdrtool}}, \code{\link{fisher.g.test}}.}

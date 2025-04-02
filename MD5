@@ -1,5 +1,5 @@
-8f92ce4ac4c6832dbd4162fa7f4dc741 *CHANGES
-ba54931fef17081ca583f36e6b63815d *DESCRIPTION
+476046737fb1b0e7f4c54246ddafd942 *CHANGES
+85b89cdc1c50d33b58797e756637e5c0 *DESCRIPTION
 b4db98a44fc9265d4180d1e80d2abe79 *NAMESPACE
 b06615af8276bcaa89e3c5e26da8fa7c *R/avgp.R
 f27036b4c9e3a139afccde9cbd393965 *R/fisher.g.test.R
@@ -11,10 +11,10 @@ e9daa1d1728094c0a7bbe4a6419db253 *R/robust.g.test.R
 1d5225925518d40eb26176be2374f9f1 *inst/doc/index.html
 8de53db53134a6358046c8b342ad8536 *inst/doc/wichert-table2.R
 952d4438325fd9eacb423105673132e8 *man/GeneCycle-internal.Rd
-8fa9533324ca47a2849d4263ded70f46 *man/avpg.Rd
+a374180392ffe65a6fb49f3f28c89457 *man/avpg.Rd
 68c7b409bf39458842d2e370a0a80a0f *man/caulobacter.Rd
-eb5456ee59005ceaa3aebae64c3bd182 *man/dominant.freqs.Rd
-fa3afc8f522e42b2093513f74f4eb9a8 *man/fisher.g.test.Rd
-ee04efba8b639040957904edd64842e7 *man/is.constant.Rd
-928635b656245a6449b85e0914339c97 *man/periodogram.Rd
-40b22144a3f77ba361cc2aa893afb1c9 *man/robust.g.test.Rd
+4975d7a15917df4eae13581d8fcc710c *man/dominant.freqs.Rd
+aceea2189edbe1c9594d5922cc6a7248 *man/fisher.g.test.Rd
+d6739cbefef8a3722b6c8c5610bec0c2 *man/is.constant.Rd
+c5e7ab365abb9cf9014dd3207e43ed32 *man/periodogram.Rd
+60a863e3d303dbc84ef8635a374c1f5c *man/robust.g.test.Rd

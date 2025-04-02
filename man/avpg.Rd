@@ -36,7 +36,7 @@ avgp(x, title = deparse(substitute(x)), plot = TRUE, angular = FALSE, \dots)
 }
 \author{
   Konstantinos Fokianos and
-  Korbinian Strimmer (\url{https://www.strimmerlab.org/}).
+  Korbinian Strimmer (\url{https://strimmerlab.github.io/}).
 }
 \references{
   Wichert, S., Fokianos, K., and Strimmer, K. (2004).  Identifying periodically expressed transcripts

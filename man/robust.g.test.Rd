@@ -87,7 +87,7 @@ g-testing.
 
   Note that when using the regression based approach there will regularly 
   be warnings about the non-convergence of the regression (iteration limit 
-  default at 20 cycles in \link{rlm}).
+  default at 20 cycles in \link[MASS]{rlm}).
   
 }
 \value{

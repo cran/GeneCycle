@@ -17,7 +17,7 @@ is.constant(x)
 }
 
 \author{
-  Korbinian Strimmer (\url{https://www.strimmerlab.org/}).
+  Korbinian Strimmer (\url{https://strimmerlab.github.io/}).
 }
 
 \examples{
